@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffffff">
+  <title>MVInter: Multi-View Human Mesh Recovery for Close Interactions</title>
+  <meta name="description" content="MVInter is an end-to-end multi-view framework that reconstructs interacting human meshes in a shared world coordinate system, without post-optimization. WACV 2027.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MVInter: Multi-View Human Mesh Recovery for Close Interactions">
+  <meta property="og:description" content="End-to-end, interaction-aware human mesh recovery from multiple views. WACV 2027.">
+  <meta property="og:image" content="static/images/pipeline.webp">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="static/js/main.js" defer></script>
+  <noscript><style>.tabs{display:none}#panel-hi4d[hidden]{display:block!important;margin-top:32px}</style></noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="hero">
+    <div class="container">
+      <h1><span class="project-name">MVInter:</span> Multi-View Human Mesh<br class="desktop-break"> Recovery for Close Interactions</h1>
+      <!-- Author order and affiliations follow cr.tex, the camera-ready source. -->
+      <p class="authors"><span>Yijie Li<sup>1</sup></span><span>Ce Zheng<sup>2</sup></span><span>Yijie He<sup>2</sup></span><span>Hewei Wang<sup>2</sup></span><span>László A. Jeni<sup>2</sup></span></p>
+      <p class="affiliations"><span><sup>1</sup> Texas A&amp;M University</span><span><sup>2</sup> Carnegie Mellon University</span></p>
+      <p class="venue">WACV 2027</p>
+      <div class="resource-links" aria-label="Project resources">
+        <!-- Replace these disabled controls with real links when PDFs are available. -->
+        <button class="resource unavailable" type="button" disabled title="The paper PDF will be added here."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Paper <small>Coming soon</small></button>
+        <button class="resource unavailable" type="button" disabled title="The supplementary PDF will be added here."><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg>Supplementary <small>Coming soon</small></button>
+        <a class="resource" href="https://github.com/Att100/MVInter" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" class="github-icon"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.26-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.39.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/></svg>Code</a>
+        <a class="resource" href="#bibtex"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6-6 6 6 6m6-12 6 6-6 6"/></svg>BibTeX</a>
+      </div>
+      <nav class="section-nav" aria-label="Page sections"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#visualization">Visualization</a><a href="#results">Results</a></nav>
+      <figure class="teaser">
+        <a href="static/images/pipeline.webp" target="_blank" rel="noopener" aria-label="Open full-resolution MVInter architecture"><img src="static/images/pipeline.webp" width="1891" height="620" alt="MVInter architecture: multi-view images pass through a ViT backbone, human detection, cross-view matching, interactive attention, and a GDCA decoder to predict two human meshes." fetchpriority="high"></a>
+        <figcaption><strong>Multiple views. Two people. One consistent 3D reconstruction.</strong><br>MVInter directly recovers interacting human meshes in a shared world coordinate system, without post-optimization.</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="abstract" class="section shaded">
+      <div class="container narrow">
+        <h2>Abstract</h2>
+        <p class="abstract-text">Human mesh recovery (HMR) is crucial for applications such as AR and motion analysis, yet existing methods mainly focus on single-view settings and struggle in close two-person interactions due to severe occlusion, depth ambiguity, and weak inter-body modeling. We propose <strong>MVInter</strong>, an end-to-end multi-view framework for reconstructing physically consistent human meshes without post-optimization. MVInter introduces Weighted Cross-View Fusion with Matching (WCFM) for correspondence-aware feature aggregation, Grid-Deformable Cross-View Attention (GDCA) for robust spatial fusion, and an Interactive Attention (IA) module to explicitly model human interactions. Experiments on two-person interaction benchmarks show that MVInter achieves state-of-the-art performance and produces accurate, globally consistent 3D meshes in challenging close-interaction scenarios.</p>
+      </div>
+    </section>
+
+    <section id="method" class="section">
+      <div class="container">
+        <h2>Method</h2>
+        <p class="section-intro">From synchronized RGB images to interaction-aware SMPL-X meshes.</p>
+        <figure class="motivation figure-medium">
+          <a href="static/images/methods-compare.webp" target="_blank" rel="noopener" aria-label="Open single-view and multi-view comparison"><img src="static/images/methods-compare.webp" width="1309" height="644" alt="Comparison of single-view and multi-view human mesh recovery for close interactions." loading="lazy"></a>
+          <figcaption>Complementary viewpoints help resolve the depth ambiguity and occlusions that make close interactions challenging for single-view recovery.</figcaption>
+        </figure>
+        <div class="method-steps">
+          <article><span class="step-number">01</span><h3>Match across views</h3><p><strong>WCFM</strong> learns soft correspondences between person detections in different views and fuses them into a unified representation for each human.</p></article>
+          <article><span class="step-number">02</span><h3>Model the interaction</h3><p><strong>Interactive Attention</strong> lets each human query attend to the other person’s 3D joint features, capturing inter-body relationships during close contact.</p></article>
+          <article><span class="step-number">03</span><h3>Refine spatial features</h3><p><strong>GDCA</strong> learns separate sampling offsets for each view, gathering informative spatial cues before predicting SMPL-X parameters and global translations.</p></article>
+        </div>
+        <div class="module-row">
+          <figure class="ia-figure">
+            <h3>Interactive Attention</h3>
+            <a href="static/images/interactive-attention.webp" target="_blank" rel="noopener" aria-label="Open Interactive Attention diagram"><img src="static/images/interactive-attention.webp" width="676" height="323" alt="Interactive Attention uses an auxiliary body model, a joint encoder, and a transformer decoder to exchange features between the two humans." loading="lazy"></a>
+            <figcaption>Cross-person joint context enriches each human query. BM denotes the body model; ENC and DEC are the transformer encoder and decoder.</figcaption>
+          </figure>
+          <figure class="gdca-figure">
+            <h3>Grid-Deformable Cross-View Attention</h3>
+            <a href="static/images/gdca.webp" target="_blank" rel="noopener" aria-label="Open GDCA diagram"><img src="static/images/gdca.webp" width="2000" height="769" alt="GDCA predicts view-specific offsets from a predefined grid, samples feature maps with bilinear interpolation, and applies cross attention to human queries." loading="lazy"></a>
+            <figcaption>A predefined grid is deformed with learned offsets. Sampled features from all views provide context for the human decoder.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="visualization" class="section shaded">
+      <div class="container">
+        <h2>Qualitative Results</h2>
+        <p class="section-intro">Reconstructing close interactions under severe occlusion.</p>
+        <div class="tabs" role="tablist" aria-label="Qualitative result dataset">
+          <button id="tab-chi3d" role="tab" aria-selected="true" aria-controls="panel-chi3d" tabindex="0">CHI3D</button>
+          <button id="tab-hi4d" role="tab" aria-selected="false" aria-controls="panel-hi4d" tabindex="-1">Hi4D</button>
+        </div>
+        <div id="panel-chi3d" role="tabpanel" aria-labelledby="tab-chi3d" tabindex="0">
+          <figure class="result-figure"><a href="static/images/chi3d.webp" target="_blank" rel="noopener" aria-label="Open CHI3D qualitative results"><img src="static/images/chi3d.webp" width="2000" height="1336" alt="CHI3D qualitative comparisons of MVInter, the multi-view Multi-HMR baseline, and ground truth across challenging two-person interactions." loading="lazy"></a><figcaption>Qualitative comparison on <strong>CHI3D</strong> against our multi-view re-implementation of Multi-HMR. MVInter improves body alignment and limb reconstruction in close-contact poses.</figcaption></figure>
+        </div>
+        <div id="panel-hi4d" role="tabpanel" aria-labelledby="tab-hi4d" tabindex="0" hidden>
+          <figure class="result-figure hi4d-figure"><a href="static/images/hi4d.webp" target="_blank" rel="noopener" aria-label="Open Hi4D qualitative results"><img src="static/images/hi4d.webp" width="1800" height="1652" alt="Hi4D qualitative comparisons of MVInter with the multi-view Multi-HMR baseline for interacting human pairs." loading="lazy"></a><figcaption>Qualitative comparison on <strong>Hi4D</strong>. MVInter produces more accurate body poses and global placement in challenging occluded interactions.</figcaption></figure>
+        </div>
+        <p class="figure-hint">Click any figure to view it at full resolution.</p>
+      </div>
+    </section>
+
+    <section id="results" class="section">
+      <div class="container">
+        <h2>Quantitative Results</h2>
+        <p class="section-intro">Evaluation on CHI3D and Hi4D. All errors are in millimeters; lower is better.</p>
+        <div class="highlights" aria-label="Selected CHI3D results"><div><strong>32.2 <small>mm</small></strong><span>CHI3D · MPJPE</span></div><div><strong>35.2 <small>mm</small></strong><span>CHI3D · PVE</span></div><div><strong>20.4 <small>mm</small></strong><span>CHI3D · Interaction error</span></div></div>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="CHI3D benchmark table, scroll horizontally on small screens">
+          <table>
+            <caption>CHI3D</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Multi-view</th><th scope="col">MPJPE ↓</th><th scope="col">PA-MPJPE ↓</th><th scope="col">PVE ↓</th><th scope="col">PA-PVE ↓</th><th scope="col">Transl. ↓</th><th scope="col">Interaction ↓</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">DualHuman</th><td>No</td><td>71.9</td><td>47.8</td><td>–</td><td>–</td><td>228.5</td><td>–</td></tr>
+              <tr><th scope="row">Multi-HMR</th><td>No</td><td>57.3</td><td>34.2</td><td>62.1</td><td>37.5</td><td>224.8</td><td>40.2</td></tr>
+              <tr class="group-start"><th scope="row">Multi-HMR<sup>‡</sup></th><td>Yes</td><td>38.0</td><td>27.3</td><td>45.4</td><td>32.1</td><td>58.3</td><td>22.5</td></tr>
+              <tr><th scope="row">Faster VoxelPose</th><td>Yes</td><td>38.9</td><td>31.9</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+              <tr><th scope="row">AvatarPose</th><td>Yes</td><td>32.8</td><td>–</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+              <tr class="ours"><th scope="row">MVInter (Ours)</th><td>Yes</td><td>32.2</td><td>23.4</td><td>35.2</td><td>25.2</td><td>37.4</td><td>20.4</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Hi4D benchmark table, scroll horizontally on small screens">
+          <table>
+            <caption>Hi4D</caption>
+            <thead><tr><th scope="col">Method</th><th scope="col">Multi-view</th><th scope="col">Backbone</th><th scope="col">MPJPE ↓</th><th scope="col">PA-MPJPE ↓</th><th scope="col">PVE ↓</th><th scope="col">PA-PVE ↓</th><th scope="col">Transl. ↓</th><th scope="col">Interaction ↓</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">BUDDI</th><td>No</td><td>HRNet-32</td><td>96.8</td><td>70.6</td><td>116.0</td><td>–</td><td>–</td><td>–</td></tr>
+              <tr><th scope="row">CloseInt</th><td>No</td><td>ViT-H/16</td><td>63.1</td><td>47.5</td><td>76.4</td><td>–</td><td>–</td><td>81.4</td></tr>
+              <tr><th scope="row">DualHuman</th><td>No</td><td>–</td><td>75.0</td><td>59.7</td><td>–</td><td>–</td><td>106.7</td><td>–</td></tr>
+              <tr><th scope="row">Human4D</th><td>No</td><td>ViT-H/16</td><td>72.1</td><td>52.4</td><td>88.6</td><td>–</td><td>–</td><td>–</td></tr>
+              <tr><th scope="row">BEV</th><td>No</td><td>HRNet-32</td><td>91.8</td><td>52.2</td><td>101.2</td><td>–</td><td>–</td><td>131.0</td></tr>
+              <tr><th scope="row">Multi-HMR</th><td>No</td><td>ViT-L/14</td><td>67.0</td><td>43.4</td><td>80.6</td><td>60.4</td><td>100.2</td><td>69.0</td></tr>
+              <tr class="group-start"><th scope="row">Faster VoxelPose</th><td>Yes</td><td>ResNet-50</td><td>69.4</td><td>54.7</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
+              <tr><th scope="row">Multi-HMR<sup>‡</sup></th><td>Yes</td><td>ViT-L/14</td><td>52.6</td><td>30.6</td><td>61.4</td><td>39.1</td><td>84.3</td><td>75.0</td></tr>
+              <tr class="ours"><th scope="row">MVInter (Ours)</th><td>Yes</td><td>ViT-L/14</td><td>47.5</td><td>29.0</td><td>55.7</td><td>36.8</td><td>59.2</td><td>49.2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-note"><sup>‡</sup> Multi-HMR re-implemented for multi-view human mesh recovery. “–” indicates an unavailable result. PA denotes Procrustes alignment; Transl. denotes global translation error.</p>
+        <details class="ablation">
+          <summary>Ablation: how much does each module contribute?</summary>
+          <p>Starting with the regression baseline, we progressively add GDCA, WCFM, and Interactive Attention. The complete model achieves the lowest error across all five metrics on CHI3D.</p>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Module ablation table">
+            <table><caption>Module ablation on CHI3D (mm)</caption><thead><tr><th scope="col">Configuration</th><th scope="col">MPJPE ↓</th><th scope="col">PA-MPJPE ↓</th><th scope="col">PVE ↓</th><th scope="col">Transl. ↓</th><th scope="col">Interaction ↓</th></tr></thead><tbody>
+              <tr><th scope="row">Regression baseline</th><td>37.95</td><td>27.27</td><td>45.37</td><td>58.34</td><td>22.53</td></tr>
+              <tr><th scope="row">+ GDCA</th><td>36.14</td><td>27.36</td><td>41.85</td><td>39.00</td><td>22.69</td></tr>
+              <tr><th scope="row">+ GDCA + WCFM</th><td>37.48</td><td>24.07</td><td>39.18</td><td>41.86</td><td>28.00</td></tr>
+              <tr class="ours"><th scope="row">+ GDCA + WCFM + IA</th><td>32.24</td><td>23.44</td><td>35.20</td><td>37.41</td><td>20.39</td></tr>
+            </tbody></table>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="attention" class="section shaded">
+      <div class="container">
+        <h2>Where Does MVInter Look?</h2>
+        <p class="section-intro">GDCA selects complementary evidence across views.</p>
+        <div class="attention-grid">
+          <figure><a href="static/images/attention-q0.webp" target="_blank" rel="noopener" aria-label="Open attention visualization for human query 1"><img src="static/images/attention-q0.webp" width="1400" height="365" alt="Top-K GDCA attention sampling points across camera views for the first human query." loading="lazy"></a><figcaption>Human query 1 · Top-K attention sampling points</figcaption></figure>
+          <figure><a href="static/images/attention-q1.webp" target="_blank" rel="noopener" aria-label="Open attention visualization for human query 2"><img src="static/images/attention-q1.webp" width="1400" height="365" alt="Top-K GDCA attention sampling points across camera views for the second human query." loading="lazy"></a><figcaption>Human query 2 · Top-K attention sampling points</figcaption></figure>
+        </div>
+        <p class="centered-copy">The learned attention focuses on the target person, gathering complementary cues about limb positions and body shape from different viewpoints.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Beyond Two-Person Interactions</h2>
+        <p class="section-intro">A qualitative extension to multiple humans on CMU Panoptic.</p>
+        <figure class="figure-medium"><a href="static/images/panoptic.webp" target="_blank" rel="noopener" aria-label="Open CMU Panoptic multi-human reconstruction"><img src="static/images/panoptic.webp" width="1556" height="636" alt="Qualitative multi-human reconstruction results on the CMU Panoptic dataset." loading="lazy"></a><figcaption>Additional results from the supplementary material illustrate the extension to a multi-human setting.</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="bibtex" class="section shaded">
+      <div class="container narrow">
+        <div class="citation-heading"><h2>BibTeX</h2><div class="citation-actions"><a href="citation.bib" download>Download .bib</a><button id="copy-bibtex" type="button" hidden>Copy</button></div></div>
+        <pre><code id="citation">@inproceedings{li2027mvinter,
+  title     = {MVInter: Multi-View Human Mesh Recovery for Close Interactions},
+  author    = {Li, Yijie and Zheng, Ce and He, Yijie and Wang, Hewei and Jeni, L{\'a}szl{\'o} A.},
+  booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+  year      = {2027}
+}</code></pre>
+        <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="container narrow"><p><strong>MVInter</strong> · Multi-View Human Mesh Recovery for Close Interactions</p><p>Page design inspired by <a href="https://att100.github.io/MV4DHMR/" target="_blank" rel="noopener noreferrer">MV4DHMR</a>. Figures and results are from the MVInter paper.</p><a class="back-top" href="#">Back to top ↑</a></div></footer>
+</body>
+</html>
